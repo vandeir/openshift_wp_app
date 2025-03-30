@@ -5,6 +5,6 @@ metadata:
   labels:
     app.kubernetes.io/part-of: wpapp
 data:
-  WORDPRESS_DB_USER: wpuser
-  WORDPRESS_DB_NAME: wpdb
-  WORDPRESS_DB_HOST: svcmysql
+  WORDPRESS_DATABASE_USER: wpuser
+  WORDPRESS_DATABASE_NAME: wpdb
+  WORDPRESS_DATABASE_HOST: svcmysql
