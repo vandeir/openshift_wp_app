@@ -2,16 +2,16 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/part-of: goapp
-    app.kubernetes.io/name: postgresql
-  name: postgresql
+    app.kubernetes.io/part-of: wpapp
+    app.kubernetes.io/name: mysql
+  name: svcmysql
 spec:
   clusterIP: None
   ports:
-  - name: tcp-postgresql
-    port: 5432
+  - name: tcp-mysql
+    port: 3306
     protocol: TCP
-    targetPort: tcp-postgresql
+    targetPort: tcp-mysql
   selector:
-    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/name: mysql
   type: ClusterIP

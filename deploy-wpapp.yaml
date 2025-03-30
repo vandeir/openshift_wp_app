@@ -2,16 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"postgresql"}]'
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"mysql"}]'
   labels:
-    app: goapp
-    app.kubernetes.io/part-of: goapp
-  name: goapp
+    app: wpapp
+    app.kubernetes.io/part-of: wpapp
+  name: wpapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: goapp
+      app: wpapp
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -20,29 +20,17 @@ spec:
   template:
     metadata:
       labels:
-        app: goapp
+        app: wpapp
     spec:
       restartPolicy: Always
-      initContainers:
-      - name: migrate
-        envFrom:
-        - secretRef:
-            name: goapp-connection
-        image: paulovigne/goapp-crud:latest
-        command: ['sh', '-c', "/app/migrate"]
-        resources:
-          requests:
-            cpu: 125m
-            memory: 128Mi
-          limits:
-            cpu: 250m
-            memory: 256Mi
       containers:
-      - name: goapp
+      - name: wpapp
         envFrom:
-        - secretRef:
-            name: goapp-connection
-        image: paulovigne/goapp-crud:latest
+          - configMapRef:
+              name: wp-vars
+          - secretRef:
+              name: wp-secret
+        image: docker.io/bitnami/wordpress
         resources:
           requests:
             cpu: 125m
@@ -56,19 +44,12 @@ spec:
           allowPrivilegeEscalation: false
         ports:
         - containerPort: 8080
-          name: tcp-goapp
+          name: tcp-wp
           protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /api/user/0
-            port: tcp-goapp
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          failureThreshold: 3
-        livenessProbe:
-          httpGet:
-            path: /api/user/0
-            port: tcp-goapp
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          failureThreshold: 3
+        volumeMounts:
+          - name: data
+            mountPath: /bitnami/wordpress
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: pvc-wp              
