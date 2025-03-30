@@ -2,15 +2,15 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: goapp
-    app.kubernetes.io/part-of: goapp
-  name: goapp
+    app: wpapp
+    app.kubernetes.io/part-of: wpapp
+  name: wpapp
 spec:
   ports:
-  - name: tcp-goapp
+  - name: tcp-wpapp
     port: 8080
     protocol: TCP
-    targetPort: tcp-goapp
+    targetPort: tcp-wpapp
   selector:
-    app: goapp
+    app: wpapp
   type: ClusterIP
