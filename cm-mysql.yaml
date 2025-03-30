@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  MYSQL_USER: wpuser
+  MYSQL_DATABASE: wpdb
+  BITNAMI_DEBUG: "false"
+kind: ConfigMap
+metadata:
+  name: mysql-vars
+  labels:
+    app.kubernetes.io/part-of: wpapp
