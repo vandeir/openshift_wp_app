@@ -8,9 +8,9 @@ metadata:
 spec:
   ports:
   - name: tcp-wpapp
-    port: 8080
+    port: 80
     protocol: TCP
-    targetPort: tcp-wpapp
+    targetPort: tcp-wp
   selector:
     app: wpapp
   type: ClusterIP
