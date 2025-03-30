@@ -1,15 +1,15 @@
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: goapp
+  name: wpapp
   labels:
-    app.kubernetes.io/part-of: goapp
+    app.kubernetes.io/part-of: wpapp
 spec:
-  path: /api
+  path: /
   to:
     kind: Service
-    name: goapp
+    name: wpapp
     weight: 100
   port:
-    targetPort: tcp-goapp
+    targetPort: tcp-wpapp
   wildcardPolicy: None
