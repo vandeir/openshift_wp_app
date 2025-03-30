@@ -40,7 +40,7 @@ spec:
             memory: 256Mi
         securityContext:
           runAsNonRoot: true
-          readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: false
           allowPrivilegeEscalation: false
         ports:
         - containerPort: 8080
