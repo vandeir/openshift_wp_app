@@ -2,62 +2,37 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    app.kubernetes.io/part-of: goapp
-    app.kubernetes.io/name: postgresql
-  name: postgresql
+    app.kubernetes.io/part-of: wpapp
+    app.kubernetes.io/name: mysql
+  name: mysql
 spec:
   podManagementPolicy: OrderedReady
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app.kubernetes.io/name: postgresql
-  serviceName: postgresql
+      app.kubernetes.io/name: mysql
+  serviceName: mysql
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app.kubernetes.io/name: postgresql
-      name: postgresql
+        app.kubernetes.io/name: mysql
+      name: mysql
     spec:
       containers:
       - envFrom:
         - configMapRef:
-            name: postgresql-vars
+            name: mysql-vars
         - secretRef:
-            name: postgresql-pass
-        image: docker.io/bitnami/postgresql:14.1.0-debian-10-r80
+            name: mysql-pass
+        image: docker.io/bitnami/mysql:5.6
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U "postgres" -h 127.0.0.1 -p 5432
-          failureThreshold: 6
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 5
-        name: postgresql
+        name: mysql
         ports:
-        - containerPort: 5432
-          name: tcp-postgresql
+        - containerPort: 3306
+          name: tcp-mysql
           protocol: TCP
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - -e
-            - |
-              exec pg_isready -U "postgres" -h 127.0.0.1 -p 5432
-              [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
-          failureThreshold: 6
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 5
         resources:
           requests:
             cpu: 250m
@@ -65,7 +40,7 @@ spec:
         volumeMounts:
         - mountPath: /dev/shm
           name: dshm
-        - mountPath: /bitnami/postgresql
+        - mountPath: /bitnami/mysql/data
           name: data
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -77,8 +52,9 @@ spec:
       - emptyDir:
           medium: Memory
         name: dshm
-      - emptyDir: {}
-        name: data     
+      - name: data
+        persistentVolumeClaim:
+          claimName: pvc-mysql
   updateStrategy:
     rollingUpdate:
       partition: 0
